@@ -4,10 +4,6 @@
 
     <item
         app:showAsAction="ifRoom|collapseActionView"
-        android:id="@+id/hlp"
-        android:title="Help" />
-    <item
-        app:showAsAction="ifRoom|collapseActionView"
         android:id="@+id/setp"
         android:icon="@drawable/settings"
         android:title="Settings" />

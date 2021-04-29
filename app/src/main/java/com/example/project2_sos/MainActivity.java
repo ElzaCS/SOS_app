@@ -37,6 +37,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity  {
     SharedPreferences sp;
@@ -67,11 +68,9 @@ public class MainActivity extends AppCompatActivity  {
                 intent = new Intent(MainActivity.this, InfoActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.hlp:
-                Toast.makeText(this, "Helping...", Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.setp:
-                Toast.makeText(this, "Loggin out...", Toast.LENGTH_SHORT).show();
+                intent = new Intent(MainActivity.this, SettingActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -84,6 +83,7 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         myDb=new DatabaseHelper(this);
+        myDb.insertMessage("Android test message");
 
         sp=getSharedPreferences("MyUserPrefs", Context.MODE_PRIVATE );
         if (!Settings.System.canWrite(getApplicationContext())) {
@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity  {
                 alert11.show();
         }
 
+
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Objects.requireNonNull(mSensorManager).registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL);
@@ -118,6 +119,7 @@ public class MainActivity extends AppCompatActivity  {
         textView = findViewById(R.id.textView);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        getLocation();
 
         Button btn_sms = findViewById(R.id.button);
         btn_sms.setOnClickListener(new View.OnClickListener() {
@@ -139,7 +141,7 @@ public class MainActivity extends AppCompatActivity  {
             Toast.makeText(getApplicationContext(), "Send SMS", Toast.LENGTH_SHORT).show();
 //          TEST AFTER RECHARGING SIM
             SmsManager sms = SmsManager.getDefault(); // using android SmsManager
-            sms.sendTextMessage(phone, null, "Android test message http://maps.google.com/?q="+latitude+","+longitude+" )", null, null);
+            sms.sendTextMessage(phone, null, myDb.getMessage()+" http://maps.google.com/?q="+latitude+","+longitude, null, null);
         }
     }
 
@@ -164,10 +166,8 @@ public class MainActivity extends AppCompatActivity  {
         if (ActivityCompat.checkSelfPermission(
                 MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            System.out.println("!!! permission error !!!");
-            Log.d("cyborg", "permission error");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-            textView.setText("Request permission");
+            textView.setText("Request Location permission");
             return null;
         } else {
 
@@ -178,9 +178,8 @@ public class MainActivity extends AppCompatActivity  {
                 latitude = String.valueOf(lat);
                 longitude = String.valueOf(longi);
                 Toast.makeText(getApplicationContext(), "Your Location: " + "\n" + "Latitude: " + latitude + "\n" + "Longitude: " + longitude, Toast.LENGTH_SHORT).show();
-                textView.setText("Your Location"+(i++)+": " + "\n" + "Latitude: " + latitude + "\n" + "Longitude: " + longitude);
+                textView.setText("Your Location"+": " + "\n" + "Latitude: " + latitude + "\n" + "Longitude: " + longitude);
             } else {
-                Log.d("cyborg", "location error");
                 Toast.makeText(this, "Unable to find location.", Toast.LENGTH_SHORT).show();
                 textView.setText("Unable to find location.");
             }
@@ -209,18 +208,6 @@ public class MainActivity extends AppCompatActivity  {
                 } else {
                     textView.setText("onLocation()");
                     sendSMS();
-//                    location = getLocation();
-//
-//                    latitude = String.valueOf(location.getLatitude());
-//                    longitude = String.valueOf(location.getLongitude());
-//
-//                    ArrayList<Contact> allContacts = myDb.getAllContacts();
-//                    for (Contact emergncy_c : allContacts){
-//                        String phone = emergncy_c.mobile;
-////                      TEST AFTER RECHARGING SIM
-////                      SmsManager sms = SmsManager.getDefault(); // using android SmsManager
-////                      sms.sendTextMessage(phone, null, "Android test message http://maps.google.com/?q="+latitude+","+longitude+" )", null, null);
-//                    }
                 }
 
             }
