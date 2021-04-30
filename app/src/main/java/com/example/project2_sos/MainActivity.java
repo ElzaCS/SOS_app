@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
@@ -13,6 +14,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -90,6 +92,10 @@ public class MainActivity extends AppCompatActivity  {
             Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName()));
             startActivityForResult(intent, 200);
         }
+
+        ConstraintLayout background = findViewById(R.id.main_layout);
+        background.setBackgroundColor(sp.getInt("bg_color", Color.WHITE));
+
         SharedPreferences sp=getApplicationContext().getSharedPreferences("MyUserPrefs", Context.MODE_PRIVATE);
         String name=sp.getString("name", "");
         String blood=sp.getString("blood", "");
@@ -138,7 +144,7 @@ public class MainActivity extends AppCompatActivity  {
         ArrayList<Contact> allContacts = myDb.getAllContacts();
         for (Contact emergncy_c : allContacts){
             String phone = emergncy_c.mobile;
-            Toast.makeText(getApplicationContext(), "Send SMS", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Sending SMS", Toast.LENGTH_SHORT).show();
 //          TEST AFTER RECHARGING SIM
             SmsManager sms = SmsManager.getDefault(); // using android SmsManager
             sms.sendTextMessage(phone, null, myDb.getMessage()+" http://maps.google.com/?q="+latitude+","+longitude, null, null);
@@ -177,7 +183,7 @@ public class MainActivity extends AppCompatActivity  {
                 double longi = locationGPS.getLongitude();
                 latitude = String.valueOf(lat);
                 longitude = String.valueOf(longi);
-                Toast.makeText(getApplicationContext(), "Your Location: " + "\n" + "Latitude: " + latitude + "\n" + "Longitude: " + longitude, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Your Location: " + "\n" + "Latitude: " + latitude + "\n" + "Longitude: " + longitude, Toast.LENGTH_SHORT).show();
                 textView.setText("Your Location"+": " + "\n" + "Latitude: " + latitude + "\n" + "Longitude: " + longitude);
             } else {
                 Toast.makeText(this, "Unable to find location.", Toast.LENGTH_SHORT).show();
@@ -198,7 +204,10 @@ public class MainActivity extends AppCompatActivity  {
             mAccelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
             float delta = mAccelCurrent - mAccelLast;
             mAccel = mAccel * 0.9f + delta;
-            if (mAccel > 12) {
+
+            SharedPreferences sp=getApplicationContext().getSharedPreferences("MyUserPrefs", Context.MODE_PRIVATE);
+            int detect = sp.getInt("detect", 1);
+            if (mAccel > 12 && detect==1) {
                 Toast.makeText(getApplicationContext(), "Shake event detected", Toast.LENGTH_SHORT).show();
 
                 Location location;

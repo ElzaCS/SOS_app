@@ -2,11 +2,13 @@ package com.example.project2_sos;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -42,6 +44,10 @@ public class InfoActivity extends AppCompatActivity {
 
         //SET NAME, BLOOD GROUP
         SharedPreferences sp=getApplicationContext().getSharedPreferences("MyUserPrefs", Context.MODE_PRIVATE);
+
+        ConstraintLayout background = findViewById(R.id.info_layout);
+        background.setBackgroundColor(sp.getInt("bg_color", Color.WHITE));
+
         String sp_name = sp.getString("name", "");
         String sp_blood = sp.getString("blood", "");
         name.setText(sp_name);
